@@ -1,0 +1,157 @@
+{
+  "last_node_id": 4,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "MFIrodoriTTS",
+      "pos": [100, 100],
+      "size": [400, 400],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [1],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MFIrodoriTTS"
+      },
+      "widgets_values": [
+        "Aratako/Irodori-TTS-500M-v2",
+        "cpu",
+        "fp32",
+        "cpu",
+        "fp32",
+        false,
+        "こんにちは、これはComfyUIからのIrodoriTTSテストです。",
+        40,
+        1,
+        "",
+        "independent",
+        3.0,
+        5.0,
+        0.5,
+        1.0,
+        true,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "0.9",
+        ""
+      ]
+    },
+    {
+      "id": 2,
+      "type": "MFIrodoriTTSDesign",
+      "pos": [100, 550],
+      "size": [400, 400],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [2],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MFIrodoriTTSDesign"
+      },
+      "widgets_values": [
+        "Aratako/Irodori-TTS-500M-v2-VoiceDesign",
+        "cpu",
+        "fp32",
+        "cpu",
+        "fp32",
+        false,
+        "こんにちは、キャプションを使ったVoiceDesignのテストです。",
+        "明るく元気な女性の声",
+        40,
+        1,
+        "",
+        "independent",
+        2.0,
+        4.0,
+        0.5,
+        1.0,
+        true,
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": 3,
+      "type": "SaveAudio",
+      "pos": [600, 100],
+      "size": [315, 114],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 1
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveAudio"
+      },
+      "widgets_values": [
+        "irodoritts_base_test"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "SaveAudio",
+      "pos": [600, 550],
+      "size": [315, 114],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 2
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveAudio"
+      },
+      "widgets_values": [
+        "irodoritts_voicedesign_test"
+      ]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 3, 0, "AUDIO"],
+    [2, 2, 0, 4, 0, "AUDIO"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1,
+      "offset": [0, 0]
+    }
+  },
+  "version": 0.4
+}
