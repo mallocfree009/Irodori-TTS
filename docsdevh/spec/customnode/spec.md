@@ -74,12 +74,15 @@ ComfyUI上でIrodoriTTSを利用するためのカスタムノードを実装す
 - **AUDIO**: 合成された音声データ (ComfyUIオーディオフォーマット)
 
 ## 実装ファイルの配置
-- `__init__.py`: ComfyUIからのエントリポイント
-- `nodes.py`: カスタムノードのクラス定義 (`MFIrodoriTTS`, `MFIrodoriTTSDesign`)
+ComfyUI Manager等で扱いやすいパッケージ構成として以下の配置とする。
+- `__init__.py`: リポジトリ直下のファイル。ComfyUIからのエントリポイントとして機能し、内部パッケージからノードをロードする。
+- `comfyui_irodori_tts/`: カスタムノードの実体となるパッケージディレクトリ。
+  - `__init__.py`: Pythonパッケージ用の初期化ファイル。
+  - `nodes.py`: カスタムノードのクラス定義 (`MFIrodoriTTS`, `MFIrodoriTTSDesign`)
 
 ## タスクリスト
 - [x] カスタムノードの仕様書を作成する (`docsdevh/spec/customnode/spec.md`)
-- [x] カスタムノードの実装を行う (`__init__.py`, `nodes.py`)
+- [x] カスタムノードの実装を行う (`__init__.py`, `comfyui_irodori_tts/nodes.py`)
 - [x] `gradio_app.py`, `gradio_app_voicedesign.py` で利用している推論処理 (`irodori_tts.inference_runtime`) をComfyUI向けにラップする。
 - [x] 音声入出力のComfyUIフォーマットとの変換処理を実装する。
 - [x] (必要に応じて) テスト用のワークフロー(JSON)を作成する。
