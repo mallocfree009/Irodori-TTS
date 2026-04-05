@@ -1,4 +1,4 @@
-from .nodes import MFIrodoriTTS, MFIrodoriTTSDesign
+from comfyui_irodori_tts.nodes import MFIrodoriTTS, MFIrodoriTTSDesign
 
 NODE_CLASS_MAPPINGS = {
     "MFIrodoriTTS": MFIrodoriTTS,
