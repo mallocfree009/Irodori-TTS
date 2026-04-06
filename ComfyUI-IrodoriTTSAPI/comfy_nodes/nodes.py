@@ -1,6 +1,7 @@
 import os
 import tempfile
-import torchaudio
+import soundfile as sf
+import torch
 from gradio_client import Client, handle_file
 
 class IrodoriTTSWebAPI:
@@ -56,7 +57,9 @@ class IrodoriTTSWebAPI:
 
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
                 audio_file_path = tmp_file.name
-            torchaudio.save(audio_file_path, waveform, sample_rate)
+            # Convert (channels, samples) to (samples, channels) for soundfile
+            waveform_np = waveform.transpose(0, 1).cpu().numpy()
+            sf.write(audio_file_path, waveform_np, sample_rate)
 
             # Use handle_file for uploading
             uploaded_audio_arg = handle_file(audio_file_path)
@@ -101,7 +104,12 @@ class IrodoriTTSWebAPI:
         if out_audio_path is None:
             raise ValueError("API did not return a valid audio file.")
 
-        waveform, sample_rate = torchaudio.load(out_audio_path)
+        waveform_np, sample_rate = sf.read(out_audio_path)
+        # soundfile reads as (samples, channels) or (samples,)
+        if waveform_np.ndim == 1:
+            waveform_np = waveform_np[:, None]
+        # Convert to (channels, samples)
+        waveform = torch.from_numpy(waveform_np).transpose(0, 1).float()
 
         # ComfyUI format: {"waveform": (1, channels, samples), "sample_rate": sample_rate}
         waveform = waveform.unsqueeze(0)
@@ -182,7 +190,12 @@ class IrodoriTTSDesignWebAPI:
         if out_audio_path is None:
             raise ValueError("API did not return a valid audio file.")
 
-        waveform, sample_rate = torchaudio.load(out_audio_path)
+        waveform_np, sample_rate = sf.read(out_audio_path)
+        # soundfile reads as (samples, channels) or (samples,)
+        if waveform_np.ndim == 1:
+            waveform_np = waveform_np[:, None]
+        # Convert to (channels, samples)
+        waveform = torch.from_numpy(waveform_np).transpose(0, 1).float()
 
         # ComfyUI format: {"waveform": (1, channels, samples), "sample_rate": sample_rate}
         waveform = waveform.unsqueeze(0)
