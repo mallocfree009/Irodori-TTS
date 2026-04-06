@@ -42,6 +42,16 @@ Shared building blocks:
 
 Audio is represented as continuous latent sequences via the codec configured by the checkpoint. v2 uses the 32-dim [Semantic-DACVAE-Japanese-32dim](https://huggingface.co/Aratako/Semantic-DACVAE-Japanese-32dim) codec for 48kHz waveform reconstruction.
 
+## ComfyUI Custom Nodes
+
+This repository includes custom nodes for ComfyUI. You can use the `IrodoriTTSWebAPI` and `IrodoriTTSDesignWebAPI` nodes by connecting them to the Gradio web server APIs.
+
+1. Install this repository in the `custom_nodes` directory of your ComfyUI installation.
+2. Start the appropriate Gradio server:
+   - For Base Model: `uv run python gradio_app.py --server-name 127.0.0.1 --server-port 7860`
+   - For VoiceDesign Model: `uv run python gradio_app_voicedesign.py --server-name 127.0.0.1 --server-port 7861`
+3. In ComfyUI, configure the node's `api_url` to match the running server (e.g., `http://127.0.0.1:7860/` or `http://127.0.0.1:7861/`).
+
 ## Installation
 
 ```bash
