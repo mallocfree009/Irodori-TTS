@@ -1,0 +1,8 @@
+[project]
+name = "comfyui-irodorittsapi"
+version = "0.1.0"
+description = "ComfyUI custom nodes for Irodori-TTS Web API"
+requires-python = ">=3.10"
+dependencies = [
+    "gradio_client>=1.0.0",
+]
