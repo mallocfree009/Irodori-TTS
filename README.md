@@ -46,7 +46,7 @@ Audio is represented as continuous latent sequences via the codec configured by 
 
 This repository includes custom nodes for ComfyUI. You can use the `IrodoriTTSWebAPI` and `IrodoriTTSDesignWebAPI` nodes by connecting them to the Gradio web server APIs.
 
-1. Install this repository in the `custom_nodes` directory of your ComfyUI installation.
+1. Copy or clone the `ComfyUI-IrodoriTTSAPI` folder into the `custom_nodes` directory of your ComfyUI installation.
 2. Start the appropriate Gradio server:
    - For Base Model: `uv run python gradio_app.py --server-name 127.0.0.1 --server-port 7860`
    - For VoiceDesign Model: `uv run python gradio_app_voicedesign.py --server-name 127.0.0.1 --server-port 7861`

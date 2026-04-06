@@ -1,5 +1,8 @@
 import unittest
+import sys
+import os
 
+sys.path.insert(0, os.path.abspath("ComfyUI-IrodoriTTSAPI"))
 from comfy_nodes.nodes import IrodoriTTSWebAPI, IrodoriTTSDesignWebAPI
 
 class TestComfyUINodes(unittest.TestCase):
