@@ -477,6 +477,7 @@ def build_ui() -> gr.Blocks:
                 speaker_kv_max_layers_raw,
             ],
             outputs=[*out_audios, out_log, out_timing],
+            api_name="generate",
         )
         model_device.change(
             _on_model_device_change, inputs=[model_device], outputs=[model_precision]
