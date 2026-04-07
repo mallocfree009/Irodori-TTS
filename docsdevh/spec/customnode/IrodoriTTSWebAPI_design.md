@@ -11,9 +11,9 @@
 *   **required**:
     *   `api_url` (STRING): Gradio APIのURL。デフォルトは `"http://127.0.0.1:7860/"`。
     *   `checkpoint` (STRING): モデルチェックポイント（HFリポジトリまたはローカルパス）。デフォルトは `"Aratako/Irodori-TTS-500M-v2"`。
-    *   `model_device` (STRING): モデルの実行デバイス (`"auto"`, `"cuda"`, `"cpu"`, `"mps"`)。デフォルトは `"auto"`。
+    *   `model_device` (STRING): モデルの実行デバイス (`"auto"`, `"cuda"`, `"cpu"`, `"mps"`)。デフォルトは `"cuda"`。
     *   `model_precision` (STRING): モデルの精度 (`"fp32"`, `"bf16"`, `"fp16"`)。デフォルトは `"fp32"`。
-    *   `codec_device` (STRING): コーデックの実行デバイス。デフォルトは `"auto"`。
+    *   `codec_device` (STRING): コーデックの実行デバイス。デフォルトは `"cuda"`。
     *   `codec_precision` (STRING): コーデックの精度。デフォルトは `"fp32"`。
     *   `enable_watermark` (BOOLEAN): 電子透かしを有効にするか。デフォルトは `False`。
     *   `text` (STRING, multiline): 合成するテキスト。
@@ -25,9 +25,9 @@
     *   `cfg_min_t` (FLOAT): CFGの最小t。デフォルトは `0.5`。
     *   `cfg_max_t` (FLOAT): CFGの最大t。デフォルトは `1.0`。
     *   `context_kv_cache` (BOOLEAN): KVキャッシュを有効にするか。デフォルトは `True`。
+    *   `seed` (INT): シード値。デフォルトは `0`（最小 `-1`、最大 `0xffffffffffffffff`）。APIリクエスト時に文字列（`seed_raw`）に変換されます。
 *   **optional**:
     *   `uploaded_audio` (AUDIO): 参照音声データ。未指定時はリファレンスなしモードとして動作。
-    *   `seed_raw` (STRING): シード値の文字列。空文字列の場合はランダム。
     *   `cfg_scale_raw` (STRING): CFGスケールのオーバーライド。
     *   `truncation_factor_raw` (STRING): 切り捨て係数。
     *   `rescale_k_raw` (STRING): リスケールk。
@@ -38,6 +38,11 @@
 
 #### RETURN_TYPES
 *   `AUDIO`: `{"waveform": tensor, "sample_rate": sample_rate}` の形式で音声データを返します。
+*   `DICT`: 入力パラメータ（`uploaded_audio`を除く）をまとめた辞書を返します。
+
+#### RETURN_NAMES
+*   `audio`
+*   `params`
 
 
 ### 2. IrodoriTTSDesignWebAPI
@@ -47,9 +52,9 @@
 *   **required**:
     *   `api_url` (STRING): Gradio APIのURL。デフォルトは `"http://127.0.0.1:7861/"`。
     *   `checkpoint` (STRING): モデルチェックポイント。デフォルトは `"Aratako/Irodori-TTS-500M-v2-VoiceDesign"`。
-    *   `model_device` (STRING): モデルの実行デバイス。デフォルトは `"auto"`。
+    *   `model_device` (STRING): モデルの実行デバイス。デフォルトは `"cuda"`。
     *   `model_precision` (STRING): モデルの精度。デフォルトは `"fp32"`。
-    *   `codec_device` (STRING): コーデックの実行デバイス。デフォルトは `"auto"`。
+    *   `codec_device` (STRING): コーデックの実行デバイス。デフォルトは `"cuda"`。
     *   `codec_precision` (STRING): コーデックの精度。デフォルトは `"fp32"`。
     *   `enable_watermark` (BOOLEAN): 電子透かしを有効にするか。デフォルトは `False`。
     *   `text` (STRING, multiline): 合成するテキスト。
@@ -61,9 +66,9 @@
     *   `cfg_min_t` (FLOAT): CFGの最小t。デフォルトは `0.5`。
     *   `cfg_max_t` (FLOAT): CFGの最大t。デフォルトは `1.0`。
     *   `context_kv_cache` (BOOLEAN): KVキャッシュを有効にするか。デフォルトは `True`。
+    *   `seed` (INT): シード値。デフォルトは `0`（最小 `-1`、最大 `0xffffffffffffffff`）。APIリクエスト時に文字列（`seed_raw`）に変換されます。
 *   **optional**:
     *   `caption` (STRING, multiline): 音声のスタイルを指定するキャプションテキスト。
-    *   `seed_raw` (STRING): シード値の文字列。
     *   `cfg_scale_raw` (STRING): CFGスケールのオーバーライド。
     *   `max_text_len_raw` (STRING): 最大テキスト長。
     *   `max_caption_len_raw` (STRING): 最大キャプション長。
@@ -73,6 +78,11 @@
 
 #### RETURN_TYPES
 *   `AUDIO`: `{"waveform": tensor, "sample_rate": sample_rate}` の形式で音声データを返します。
+*   `DICT`: 入力パラメータをまとめた辞書を返します。
+
+#### RETURN_NAMES
+*   `audio`
+*   `params`
 
 ## API呼び出しの要件
 *   `gradio_client.Client(src=api_url)` を利用して通信を行う。
