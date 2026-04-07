@@ -11,9 +11,9 @@ class IrodoriTTSWebAPI:
             "required": {
                 "api_url": ("STRING", {"default": "http://127.0.0.1:7860/"}),
                 "checkpoint": ("STRING", {"default": "Aratako/Irodori-TTS-500M-v2"}),
-                "model_device": (["auto", "cuda", "cpu", "mps"], {"default": "auto"}),
+                "model_device": (["auto", "cuda", "cpu", "mps"], {"default": "cuda"}),
                 "model_precision": (["fp32", "bf16", "fp16"], {"default": "fp32"}),
-                "codec_device": (["auto", "cuda", "cpu", "mps"], {"default": "auto"}),
+                "codec_device": (["auto", "cuda", "cpu", "mps"], {"default": "cuda"}),
                 "codec_precision": (["fp32", "bf16", "fp16"], {"default": "fp32"}),
                 "text": ("STRING", {"multiline": True}),
                 "num_steps": ("INT", {"default": 40, "min": 1, "max": 120}),
@@ -24,10 +24,10 @@ class IrodoriTTSWebAPI:
                 "cfg_min_t": ("FLOAT", {"default": 0.5}),
                 "cfg_max_t": ("FLOAT", {"default": 1.0}),
                 "context_kv_cache": ("BOOLEAN", {"default": True}),
+                "seed": ("INT", {"default": 0, "min": -1, "max": 0xffffffffffffffff}),
             },
             "optional": {
                 "uploaded_audio": ("AUDIO",),
-                "seed_raw": ("STRING", {"default": ""}),
                 "cfg_scale_raw": ("STRING", {"default": ""}),
                 "truncation_factor_raw": ("STRING", {"default": ""}),
                 "rescale_k_raw": ("STRING", {"default": ""}),
@@ -38,12 +38,41 @@ class IrodoriTTSWebAPI:
             }
         }
 
-    RETURN_TYPES = ("AUDIO",)
+    RETURN_TYPES = ("AUDIO", "DICT")
+    RETURN_NAMES = ("audio", "params")
     FUNCTION = "generate"
     CATEGORY = "IrodoriTTS"
 
-    def generate(self, api_url, checkpoint, model_device, model_precision, codec_device, codec_precision, text, num_steps, num_candidates, cfg_guidance_mode, cfg_scale_text, cfg_scale_speaker, cfg_min_t, cfg_max_t, context_kv_cache, uploaded_audio=None, seed_raw="", cfg_scale_raw="", truncation_factor_raw="", rescale_k_raw="", rescale_sigma_raw="", speaker_kv_scale_raw="", speaker_kv_min_t_raw="0.9", speaker_kv_max_layers_raw=""):
+    def generate(self, api_url, checkpoint, model_device, model_precision, codec_device, codec_precision, text, num_steps, num_candidates, cfg_guidance_mode, cfg_scale_text, cfg_scale_speaker, cfg_min_t, cfg_max_t, context_kv_cache, seed=0, uploaded_audio=None, cfg_scale_raw="", truncation_factor_raw="", rescale_k_raw="", rescale_sigma_raw="", speaker_kv_scale_raw="", speaker_kv_min_t_raw="0.9", speaker_kv_max_layers_raw=""):
         client = Client(src=api_url)
+
+        params = {
+            "api_url": api_url,
+            "checkpoint": checkpoint,
+            "model_device": model_device,
+            "model_precision": model_precision,
+            "codec_device": codec_device,
+            "codec_precision": codec_precision,
+            "text": text,
+            "num_steps": num_steps,
+            "num_candidates": num_candidates,
+            "cfg_guidance_mode": cfg_guidance_mode,
+            "cfg_scale_text": cfg_scale_text,
+            "cfg_scale_speaker": cfg_scale_speaker,
+            "cfg_min_t": cfg_min_t,
+            "cfg_max_t": cfg_max_t,
+            "context_kv_cache": context_kv_cache,
+            "seed": seed,
+            "cfg_scale_raw": cfg_scale_raw,
+            "truncation_factor_raw": truncation_factor_raw,
+            "rescale_k_raw": rescale_k_raw,
+            "rescale_sigma_raw": rescale_sigma_raw,
+            "speaker_kv_scale_raw": speaker_kv_scale_raw,
+            "speaker_kv_min_t_raw": speaker_kv_min_t_raw,
+            "speaker_kv_max_layers_raw": speaker_kv_max_layers_raw,
+        }
+
+        seed_raw = str(seed)
 
         audio_file_path = None
         if uploaded_audio is not None:
@@ -110,7 +139,7 @@ class IrodoriTTSWebAPI:
         # ComfyUI format: {"waveform": (1, channels, samples), "sample_rate": sample_rate}
         waveform = waveform.unsqueeze(0)
 
-        return ({"waveform": waveform, "sample_rate": sample_rate},)
+        return ({"waveform": waveform, "sample_rate": sample_rate}, params)
 
 
 class IrodoriTTSDesignWebAPI:
@@ -120,9 +149,9 @@ class IrodoriTTSDesignWebAPI:
             "required": {
                 "api_url": ("STRING", {"default": "http://127.0.0.1:7861/"}),
                 "checkpoint": ("STRING", {"default": "Aratako/Irodori-TTS-500M-v2-VoiceDesign"}),
-                "model_device": (["auto", "cuda", "cpu", "mps"], {"default": "auto"}),
+                "model_device": (["auto", "cuda", "cpu", "mps"], {"default": "cuda"}),
                 "model_precision": (["fp32", "bf16", "fp16"], {"default": "fp32"}),
-                "codec_device": (["auto", "cuda", "cpu", "mps"], {"default": "auto"}),
+                "codec_device": (["auto", "cuda", "cpu", "mps"], {"default": "cuda"}),
                 "codec_precision": (["fp32", "bf16", "fp16"], {"default": "fp32"}),
                 "text": ("STRING", {"multiline": True}),
                 "num_steps": ("INT", {"default": 40, "min": 1, "max": 120}),
@@ -133,10 +162,10 @@ class IrodoriTTSDesignWebAPI:
                 "cfg_min_t": ("FLOAT", {"default": 0.5}),
                 "cfg_max_t": ("FLOAT", {"default": 1.0}),
                 "context_kv_cache": ("BOOLEAN", {"default": True}),
+                "seed": ("INT", {"default": 0, "min": -1, "max": 0xffffffffffffffff}),
             },
             "optional": {
                 "caption": ("STRING", {"multiline": True, "default": ""}),
-                "seed_raw": ("STRING", {"default": ""}),
                 "cfg_scale_raw": ("STRING", {"default": ""}),
                 "max_text_len_raw": ("STRING", {"default": ""}),
                 "max_caption_len_raw": ("STRING", {"default": ""}),
@@ -146,12 +175,41 @@ class IrodoriTTSDesignWebAPI:
             }
         }
 
-    RETURN_TYPES = ("AUDIO",)
+    RETURN_TYPES = ("AUDIO", "DICT")
+    RETURN_NAMES = ("audio", "params")
     FUNCTION = "generate"
     CATEGORY = "IrodoriTTS"
 
-    def generate(self, api_url, checkpoint, model_device, model_precision, codec_device, codec_precision, text, num_steps, num_candidates, cfg_guidance_mode, cfg_scale_text, cfg_scale_caption, cfg_min_t, cfg_max_t, context_kv_cache, caption="", seed_raw="", cfg_scale_raw="", max_text_len_raw="", max_caption_len_raw="", truncation_factor_raw="", rescale_k_raw="", rescale_sigma_raw=""):
+    def generate(self, api_url, checkpoint, model_device, model_precision, codec_device, codec_precision, text, num_steps, num_candidates, cfg_guidance_mode, cfg_scale_text, cfg_scale_caption, cfg_min_t, cfg_max_t, context_kv_cache, seed=0, caption="", cfg_scale_raw="", max_text_len_raw="", max_caption_len_raw="", truncation_factor_raw="", rescale_k_raw="", rescale_sigma_raw=""):
         client = Client(src=api_url)
+
+        params = {
+            "api_url": api_url,
+            "checkpoint": checkpoint,
+            "model_device": model_device,
+            "model_precision": model_precision,
+            "codec_device": codec_device,
+            "codec_precision": codec_precision,
+            "text": text,
+            "num_steps": num_steps,
+            "num_candidates": num_candidates,
+            "cfg_guidance_mode": cfg_guidance_mode,
+            "cfg_scale_text": cfg_scale_text,
+            "cfg_scale_caption": cfg_scale_caption,
+            "cfg_min_t": cfg_min_t,
+            "cfg_max_t": cfg_max_t,
+            "context_kv_cache": context_kv_cache,
+            "seed": seed,
+            "caption": caption,
+            "cfg_scale_raw": cfg_scale_raw,
+            "max_text_len_raw": max_text_len_raw,
+            "max_caption_len_raw": max_caption_len_raw,
+            "truncation_factor_raw": truncation_factor_raw,
+            "rescale_k_raw": rescale_k_raw,
+            "rescale_sigma_raw": rescale_sigma_raw,
+        }
+
+        seed_raw = str(seed)
 
         result = client.predict(
             checkpoint=checkpoint,
@@ -192,4 +250,4 @@ class IrodoriTTSDesignWebAPI:
         # ComfyUI format: {"waveform": (1, channels, samples), "sample_rate": sample_rate}
         waveform = waveform.unsqueeze(0)
 
-        return ({"waveform": waveform, "sample_rate": sample_rate},)
+        return ({"waveform": waveform, "sample_rate": sample_rate}, params)
