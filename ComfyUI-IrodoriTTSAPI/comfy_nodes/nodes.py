@@ -1,6 +1,6 @@
 import os
 import tempfile
-import soundfile as sf
+import torchaudio
 import torch
 from gradio_client import Client, handle_file
 
@@ -57,9 +57,9 @@ class IrodoriTTSWebAPI:
 
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
                 audio_file_path = tmp_file.name
-            # Convert (channels, samples) to (samples, channels) for soundfile
-            waveform_np = waveform.transpose(0, 1).cpu().numpy()
-            sf.write(audio_file_path, waveform_np, sample_rate)
+
+            # Use torchaudio.save with soundfile backend to avoid torchcodec dependency issues
+            torchaudio.save(audio_file_path, waveform.cpu(), sample_rate, backend="soundfile")
 
             # Use handle_file for uploading
             uploaded_audio_arg = handle_file(audio_file_path)
@@ -68,30 +68,30 @@ class IrodoriTTSWebAPI:
 
         try:
             result = client.predict(
-                checkpoint=checkpoint,
-                model_device=model_device,
-                model_precision=model_precision,
-                codec_device=codec_device,
-                codec_precision=codec_precision,
-                enable_watermark=enable_watermark,
-                text=text,
-                uploaded_audio=uploaded_audio_arg,
-                num_steps=num_steps,
-                num_candidates=num_candidates,
-                seed_raw=seed_raw,
-                cfg_guidance_mode=cfg_guidance_mode,
-                cfg_scale_text=cfg_scale_text,
-                cfg_scale_speaker=cfg_scale_speaker,
-                cfg_scale_raw=cfg_scale_raw,
-                cfg_min_t=cfg_min_t,
-                cfg_max_t=cfg_max_t,
-                context_kv_cache=context_kv_cache,
-                truncation_factor_raw=truncation_factor_raw,
-                rescale_k_raw=rescale_k_raw,
-                rescale_sigma_raw=rescale_sigma_raw,
-                speaker_kv_scale_raw=speaker_kv_scale_raw,
-                speaker_kv_min_t_raw=speaker_kv_min_t_raw,
-                speaker_kv_max_layers_raw=speaker_kv_max_layers_raw,
+                checkpoint,
+                model_device,
+                model_precision,
+                codec_device,
+                codec_precision,
+                enable_watermark,
+                text,
+                uploaded_audio_arg,
+                num_steps,
+                num_candidates,
+                seed_raw,
+                cfg_guidance_mode,
+                cfg_scale_text,
+                cfg_scale_speaker,
+                cfg_scale_raw,
+                cfg_min_t,
+                cfg_max_t,
+                context_kv_cache,
+                truncation_factor_raw,
+                rescale_k_raw,
+                rescale_sigma_raw,
+                speaker_kv_scale_raw,
+                speaker_kv_min_t_raw,
+                speaker_kv_max_layers_raw,
                 api_name="/generate"
             )
         finally:
@@ -104,12 +104,7 @@ class IrodoriTTSWebAPI:
         if out_audio_path is None:
             raise ValueError("API did not return a valid audio file.")
 
-        waveform_np, sample_rate = sf.read(out_audio_path)
-        # soundfile reads as (samples, channels) or (samples,)
-        if waveform_np.ndim == 1:
-            waveform_np = waveform_np[:, None]
-        # Convert to (channels, samples)
-        waveform = torch.from_numpy(waveform_np).transpose(0, 1).float()
+        waveform, sample_rate = torchaudio.load(out_audio_path, backend="soundfile")
 
         # ComfyUI format: {"waveform": (1, channels, samples), "sample_rate": sample_rate}
         waveform = waveform.unsqueeze(0)
@@ -159,29 +154,29 @@ class IrodoriTTSDesignWebAPI:
         client = Client(src=api_url)
 
         result = client.predict(
-            checkpoint=checkpoint,
-            model_device=model_device,
-            model_precision=model_precision,
-            codec_device=codec_device,
-            codec_precision=codec_precision,
-            enable_watermark=enable_watermark,
-            text=text,
-            caption=caption,
-            num_steps=num_steps,
-            num_candidates=num_candidates,
-            seed_raw=seed_raw,
-            cfg_guidance_mode=cfg_guidance_mode,
-            cfg_scale_text=cfg_scale_text,
-            cfg_scale_caption=cfg_scale_caption,
-            cfg_scale_raw=cfg_scale_raw,
-            cfg_min_t=cfg_min_t,
-            cfg_max_t=cfg_max_t,
-            context_kv_cache=context_kv_cache,
-            max_text_len_raw=max_text_len_raw,
-            max_caption_len_raw=max_caption_len_raw,
-            truncation_factor_raw=truncation_factor_raw,
-            rescale_k_raw=rescale_k_raw,
-            rescale_sigma_raw=rescale_sigma_raw,
+            checkpoint,
+            model_device,
+            model_precision,
+            codec_device,
+            codec_precision,
+            enable_watermark,
+            text,
+            caption,
+            num_steps,
+            num_candidates,
+            seed_raw,
+            cfg_guidance_mode,
+            cfg_scale_text,
+            cfg_scale_caption,
+            cfg_scale_raw,
+            cfg_min_t,
+            cfg_max_t,
+            context_kv_cache,
+            max_text_len_raw,
+            max_caption_len_raw,
+            truncation_factor_raw,
+            rescale_k_raw,
+            rescale_sigma_raw,
             api_name="/generate"
         )
 
@@ -190,12 +185,7 @@ class IrodoriTTSDesignWebAPI:
         if out_audio_path is None:
             raise ValueError("API did not return a valid audio file.")
 
-        waveform_np, sample_rate = sf.read(out_audio_path)
-        # soundfile reads as (samples, channels) or (samples,)
-        if waveform_np.ndim == 1:
-            waveform_np = waveform_np[:, None]
-        # Convert to (channels, samples)
-        waveform = torch.from_numpy(waveform_np).transpose(0, 1).float()
+        waveform, sample_rate = torchaudio.load(out_audio_path, backend="soundfile")
 
         # ComfyUI format: {"waveform": (1, channels, samples), "sample_rate": sample_rate}
         waveform = waveform.unsqueeze(0)
