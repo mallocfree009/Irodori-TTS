@@ -15,7 +15,6 @@ class IrodoriTTSWebAPI:
                 "model_precision": (["fp32", "bf16", "fp16"], {"default": "fp32"}),
                 "codec_device": (["auto", "cuda", "cpu", "mps"], {"default": "auto"}),
                 "codec_precision": (["fp32", "bf16", "fp16"], {"default": "fp32"}),
-                "enable_watermark": ("BOOLEAN", {"default": False}),
                 "text": ("STRING", {"multiline": True}),
                 "num_steps": ("INT", {"default": 40, "min": 1, "max": 120}),
                 "num_candidates": ("INT", {"default": 1, "min": 1, "max": 32}),
@@ -43,7 +42,7 @@ class IrodoriTTSWebAPI:
     FUNCTION = "generate"
     CATEGORY = "IrodoriTTS"
 
-    def generate(self, api_url, checkpoint, model_device, model_precision, codec_device, codec_precision, enable_watermark, text, num_steps, num_candidates, cfg_guidance_mode, cfg_scale_text, cfg_scale_speaker, cfg_min_t, cfg_max_t, context_kv_cache, uploaded_audio=None, seed_raw="", cfg_scale_raw="", truncation_factor_raw="", rescale_k_raw="", rescale_sigma_raw="", speaker_kv_scale_raw="", speaker_kv_min_t_raw="0.9", speaker_kv_max_layers_raw=""):
+    def generate(self, api_url, checkpoint, model_device, model_precision, codec_device, codec_precision, text, num_steps, num_candidates, cfg_guidance_mode, cfg_scale_text, cfg_scale_speaker, cfg_min_t, cfg_max_t, context_kv_cache, uploaded_audio=None, seed_raw="", cfg_scale_raw="", truncation_factor_raw="", rescale_k_raw="", rescale_sigma_raw="", speaker_kv_scale_raw="", speaker_kv_min_t_raw="0.9", speaker_kv_max_layers_raw=""):
         client = Client(src=api_url)
 
         audio_file_path = None
@@ -73,7 +72,6 @@ class IrodoriTTSWebAPI:
                 model_precision,
                 codec_device,
                 codec_precision,
-                enable_watermark,
                 text,
                 uploaded_audio_arg,
                 num_steps,
@@ -123,7 +121,6 @@ class IrodoriTTSDesignWebAPI:
                 "model_precision": (["fp32", "bf16", "fp16"], {"default": "fp32"}),
                 "codec_device": (["auto", "cuda", "cpu", "mps"], {"default": "auto"}),
                 "codec_precision": (["fp32", "bf16", "fp16"], {"default": "fp32"}),
-                "enable_watermark": ("BOOLEAN", {"default": False}),
                 "text": ("STRING", {"multiline": True}),
                 "num_steps": ("INT", {"default": 40, "min": 1, "max": 120}),
                 "num_candidates": ("INT", {"default": 1, "min": 1, "max": 32}),
@@ -150,7 +147,7 @@ class IrodoriTTSDesignWebAPI:
     FUNCTION = "generate"
     CATEGORY = "IrodoriTTS"
 
-    def generate(self, api_url, checkpoint, model_device, model_precision, codec_device, codec_precision, enable_watermark, text, num_steps, num_candidates, cfg_guidance_mode, cfg_scale_text, cfg_scale_caption, cfg_min_t, cfg_max_t, context_kv_cache, caption="", seed_raw="", cfg_scale_raw="", max_text_len_raw="", max_caption_len_raw="", truncation_factor_raw="", rescale_k_raw="", rescale_sigma_raw=""):
+    def generate(self, api_url, checkpoint, model_device, model_precision, codec_device, codec_precision, text, num_steps, num_candidates, cfg_guidance_mode, cfg_scale_text, cfg_scale_caption, cfg_min_t, cfg_max_t, context_kv_cache, caption="", seed_raw="", cfg_scale_raw="", max_text_len_raw="", max_caption_len_raw="", truncation_factor_raw="", rescale_k_raw="", rescale_sigma_raw=""):
         client = Client(src=api_url)
 
         result = client.predict(
@@ -159,7 +156,6 @@ class IrodoriTTSDesignWebAPI:
             model_precision,
             codec_device,
             codec_precision,
-            enable_watermark,
             text,
             caption,
             num_steps,
