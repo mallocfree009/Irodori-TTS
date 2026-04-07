@@ -89,3 +89,4 @@
 *   `client.predict(..., api_name="/generate")` を利用する。
 *   ComfyUI側でAudio入力を受け取った場合、一時ファイル（WAV）に保存して `gradio_client.handle_file` を通じてAPIに送信する。
 *   戻り値としてGradio APIから取得したWAVファイルを読み込み、ComfyUIの `AUDIO` 形式に変換する。
+*   WAVファイルのロードが完了したら元の音声ファイルを削除し、削除したファイルのパスをログ出力する。
