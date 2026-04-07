@@ -99,6 +99,9 @@ class IrodoriTTSWebAPI:
         # Result is a tuple: (audio1, audio2, ..., audio32, detail_text, timing_text)
         # We take the first audio output (result[0])
         out_audio_path = result[0]
+        if isinstance(out_audio_path, dict) and "value" in out_audio_path:
+            out_audio_path = out_audio_path["value"]
+
         if out_audio_path is None:
             raise ValueError("API did not return a valid audio file.")
 
@@ -178,6 +181,9 @@ class IrodoriTTSDesignWebAPI:
 
         # Result is a tuple: (audio1, audio2, ..., audio32, detail_text, timing_text)
         out_audio_path = result[0]
+        if isinstance(out_audio_path, dict) and "value" in out_audio_path:
+            out_audio_path = out_audio_path["value"]
+
         if out_audio_path is None:
             raise ValueError("API did not return a valid audio file.")
 
