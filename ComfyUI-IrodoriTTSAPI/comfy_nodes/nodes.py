@@ -39,14 +39,14 @@ class IrodoriTTSWebAPI:
         }
 
     RETURN_TYPES = ("AUDIO", "DICT")
-    RETURN_NAMES = ("audio", "params")
+    RETURN_NAMES = ("audio", "parameters")
     FUNCTION = "generate"
     CATEGORY = "IrodoriTTS"
 
     def generate(self, api_url, checkpoint, model_device, model_precision, codec_device, codec_precision, text, num_steps, num_candidates, cfg_guidance_mode, cfg_scale_text, cfg_scale_speaker, cfg_min_t, cfg_max_t, context_kv_cache, seed=0, uploaded_audio=None, cfg_scale_raw="", truncation_factor_raw="", rescale_k_raw="", rescale_sigma_raw="", speaker_kv_scale_raw="", speaker_kv_min_t_raw="0.9", speaker_kv_max_layers_raw=""):
         client = Client(src=api_url)
 
-        params = {
+        parameters = {
             "api_url": api_url,
             "checkpoint": checkpoint,
             "model_device": model_device,
@@ -144,7 +144,7 @@ class IrodoriTTSWebAPI:
         # ComfyUI format: {"waveform": (1, channels, samples), "sample_rate": sample_rate}
         waveform = waveform.unsqueeze(0)
 
-        return ({"waveform": waveform, "sample_rate": sample_rate}, params)
+        return ({"waveform": waveform, "sample_rate": sample_rate}, parameters)
 
 
 class IrodoriTTSDesignWebAPI:
@@ -181,14 +181,14 @@ class IrodoriTTSDesignWebAPI:
         }
 
     RETURN_TYPES = ("AUDIO", "DICT")
-    RETURN_NAMES = ("audio", "params")
+    RETURN_NAMES = ("audio", "parameters")
     FUNCTION = "generate"
     CATEGORY = "IrodoriTTS"
 
     def generate(self, api_url, checkpoint, model_device, model_precision, codec_device, codec_precision, text, num_steps, num_candidates, cfg_guidance_mode, cfg_scale_text, cfg_scale_caption, cfg_min_t, cfg_max_t, context_kv_cache, seed=0, caption="", cfg_scale_raw="", max_text_len_raw="", max_caption_len_raw="", truncation_factor_raw="", rescale_k_raw="", rescale_sigma_raw=""):
         client = Client(src=api_url)
 
-        params = {
+        parameters = {
             "api_url": api_url,
             "checkpoint": checkpoint,
             "model_device": model_device,
@@ -260,4 +260,4 @@ class IrodoriTTSDesignWebAPI:
         # ComfyUI format: {"waveform": (1, channels, samples), "sample_rate": sample_rate}
         waveform = waveform.unsqueeze(0)
 
-        return ({"waveform": waveform, "sample_rate": sample_rate}, params)
+        return ({"waveform": waveform, "sample_rate": sample_rate}, parameters)
