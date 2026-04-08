@@ -132,17 +132,31 @@ class IrodoriTTSWebAPI:
             out_audio_path = out_audio_path["value"]
 
         if out_audio_path is None:
+            # Clean up any other downloaded files if the first one is invalid
+            for out_file in result[:-2]:
+                if out_file is None:
+                    continue
+                if isinstance(out_file, dict) and "value" in out_file:
+                    out_file = out_file["value"]
+                if out_file and os.path.exists(out_file):
+                    os.remove(out_file)
+                    print(f"Deleted downloaded audio file: {out_file}")
             raise ValueError("API did not return a valid audio file.")
 
         waveform, sample_rate = torchaudio.load(out_audio_path, backend="soundfile")
 
-        # ロード完了後に元の音声ファイルを削除し、ログ出力
-        if os.path.exists(out_audio_path):
-            os.remove(out_audio_path)
-            print(f"Deleted downloaded audio file: {out_audio_path}")
-
         # ComfyUI format: {"waveform": (1, channels, samples), "sample_rate": sample_rate}
         waveform = waveform.unsqueeze(0)
+
+        # ロード完了後にGradioからダウンロードした全ての音声ファイルを削除し、ログ出力
+        for out_file in result[:-2]:
+            if out_file is None:
+                continue
+            if isinstance(out_file, dict) and "value" in out_file:
+                out_file = out_file["value"]
+            if out_file and os.path.exists(out_file):
+                os.remove(out_file)
+                print(f"Deleted downloaded audio file: {out_file}")
 
         return ({"waveform": waveform, "sample_rate": sample_rate}, parameters)
 
@@ -248,16 +262,30 @@ class IrodoriTTSDesignWebAPI:
             out_audio_path = out_audio_path["value"]
 
         if out_audio_path is None:
+            # Clean up any other downloaded files if the first one is invalid
+            for out_file in result[:-2]:
+                if out_file is None:
+                    continue
+                if isinstance(out_file, dict) and "value" in out_file:
+                    out_file = out_file["value"]
+                if out_file and os.path.exists(out_file):
+                    os.remove(out_file)
+                    print(f"Deleted downloaded audio file: {out_file}")
             raise ValueError("API did not return a valid audio file.")
 
         waveform, sample_rate = torchaudio.load(out_audio_path, backend="soundfile")
 
-        # ロード完了後に元の音声ファイルを削除し、ログ出力
-        if os.path.exists(out_audio_path):
-            os.remove(out_audio_path)
-            print(f"Deleted downloaded audio file: {out_audio_path}")
-
         # ComfyUI format: {"waveform": (1, channels, samples), "sample_rate": sample_rate}
         waveform = waveform.unsqueeze(0)
+
+        # ロード完了後にGradioからダウンロードした全ての音声ファイルを削除し、ログ出力
+        for out_file in result[:-2]:
+            if out_file is None:
+                continue
+            if isinstance(out_file, dict) and "value" in out_file:
+                out_file = out_file["value"]
+            if out_file and os.path.exists(out_file):
+                os.remove(out_file)
+                print(f"Deleted downloaded audio file: {out_file}")
 
         return ({"waveform": waveform, "sample_rate": sample_rate}, parameters)

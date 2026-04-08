@@ -25,7 +25,7 @@ class TestComfyUINodes(unittest.TestCase):
 
         # RETURN_TYPES Check
         self.assertEqual(node.RETURN_TYPES, ("AUDIO", "DICT"))
-        self.assertEqual(node.RETURN_NAMES, ("audio", "params"))
+        self.assertEqual(node.RETURN_NAMES, ("audio", "parameters"))
         self.assertEqual(node.FUNCTION, "generate")
 
     @patch("comfy_nodes.nodes.Client")
@@ -37,7 +37,9 @@ class TestComfyUINodes(unittest.TestCase):
         # モックの準備
         mock_client = MagicMock()
         mock_client_class.return_value = mock_client
-        mock_client.predict.return_value = ({"value": "/dummy/path/audio.wav"}, "dummy_text", "dummy_timing")
+        # num_candidates=2を想定し、2つの音声ファイルパスを返す。Gradioからの戻り値は通常32個のオーディオ（一部はNone）と2つのテキスト
+        mock_predict_return = [{"value": "/dummy/path/audio1.wav"}, {"value": "/dummy/path/audio2.wav"}] + [None]*30 + ["dummy_text", "dummy_timing"]
+        mock_client.predict.return_value = tuple(mock_predict_return)
 
         # torchaudio.load の戻り値のモック: (waveform, sample_rate)
         mock_waveform = torch.zeros(1, 1000)
@@ -51,19 +53,22 @@ class TestComfyUINodes(unittest.TestCase):
         # 最低限の引数で呼び出し
         result = node.generate(
             api_url="http://dummy", checkpoint="dummy_ckpt", model_device="cpu", model_precision="fp32",
-            codec_device="cpu", codec_precision="fp32", text="こんにちは", num_steps=10, num_candidates=1,
+            codec_device="cpu", codec_precision="fp32", text="こんにちは", num_steps=10, num_candidates=2,
             cfg_guidance_mode="independent", cfg_scale_text=3.0, cfg_scale_speaker=5.0, cfg_min_t=0.5,
             cfg_max_t=1.0, context_kv_cache=True
         )
 
-        # torchaudio.load が正しいパスで呼ばれたか
-        mock_torchaudio_load.assert_called_once_with("/dummy/path/audio.wav", backend="soundfile")
+        # torchaudio.load が1番目の正しいパスで呼ばれたか
+        mock_torchaudio_load.assert_called_once_with("/dummy/path/audio1.wav", backend="soundfile")
 
-        # os.remove が呼ばれ、ファイルが削除されたか
-        mock_remove.assert_called_once_with("/dummy/path/audio.wav")
+        # os.remove が各ファイルパスに対して呼ばれ、ファイルが削除されたか
+        mock_remove.assert_any_call("/dummy/path/audio1.wav")
+        mock_remove.assert_any_call("/dummy/path/audio2.wav")
+        self.assertEqual(mock_remove.call_count, 2)
 
         # ログ出力が行われたか
-        mock_print.assert_called_with("Deleted downloaded audio file: /dummy/path/audio.wav")
+        mock_print.assert_any_call("Deleted downloaded audio file: /dummy/path/audio1.wav")
+        mock_print.assert_any_call("Deleted downloaded audio file: /dummy/path/audio2.wav")
 
         # 結果の形式確認
         self.assertIn("waveform", result[0])
@@ -86,7 +91,7 @@ class TestComfyUINodes(unittest.TestCase):
 
         # RETURN_TYPES Check
         self.assertEqual(node.RETURN_TYPES, ("AUDIO", "DICT"))
-        self.assertEqual(node.RETURN_NAMES, ("audio", "params"))
+        self.assertEqual(node.RETURN_NAMES, ("audio", "parameters"))
         self.assertEqual(node.FUNCTION, "generate")
 
     @patch("comfy_nodes.nodes.Client")
@@ -98,7 +103,9 @@ class TestComfyUINodes(unittest.TestCase):
         # モックの準備
         mock_client = MagicMock()
         mock_client_class.return_value = mock_client
-        mock_client.predict.return_value = ({"value": "/dummy/path/design_audio.wav"}, "dummy_text", "dummy_timing")
+        # num_candidates=2を想定
+        mock_predict_return = [{"value": "/dummy/path/design_audio1.wav"}, {"value": "/dummy/path/design_audio2.wav"}] + [None]*30 + ["dummy_text", "dummy_timing"]
+        mock_client.predict.return_value = tuple(mock_predict_return)
 
         # torchaudio.load の戻り値のモック: (waveform, sample_rate)
         mock_waveform = torch.zeros(1, 1000)
@@ -112,19 +119,22 @@ class TestComfyUINodes(unittest.TestCase):
         # 最低限の引数で呼び出し
         result = node.generate(
             api_url="http://dummy", checkpoint="dummy_ckpt", model_device="cpu", model_precision="fp32",
-            codec_device="cpu", codec_precision="fp32", text="こんにちは", num_steps=10, num_candidates=1,
+            codec_device="cpu", codec_precision="fp32", text="こんにちは", num_steps=10, num_candidates=2,
             cfg_guidance_mode="independent", cfg_scale_text=2.0, cfg_scale_caption=4.0, cfg_min_t=0.5,
             cfg_max_t=1.0, context_kv_cache=True
         )
 
         # torchaudio.load が正しいパスで呼ばれたか
-        mock_torchaudio_load.assert_called_once_with("/dummy/path/design_audio.wav", backend="soundfile")
+        mock_torchaudio_load.assert_called_once_with("/dummy/path/design_audio1.wav", backend="soundfile")
 
-        # os.remove が呼ばれ、ファイルが削除されたか
-        mock_remove.assert_called_once_with("/dummy/path/design_audio.wav")
+        # os.remove が各ファイルに対して呼ばれ、ファイルが削除されたか
+        mock_remove.assert_any_call("/dummy/path/design_audio1.wav")
+        mock_remove.assert_any_call("/dummy/path/design_audio2.wav")
+        self.assertEqual(mock_remove.call_count, 2)
 
         # ログ出力が行われたか
-        mock_print.assert_called_with("Deleted downloaded audio file: /dummy/path/design_audio.wav")
+        mock_print.assert_any_call("Deleted downloaded audio file: /dummy/path/design_audio1.wav")
+        mock_print.assert_any_call("Deleted downloaded audio file: /dummy/path/design_audio2.wav")
 
         # 結果の形式確認
         self.assertIn("waveform", result[0])
