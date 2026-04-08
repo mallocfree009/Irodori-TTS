@@ -42,7 +42,7 @@
 
 #### RETURN_NAMES
 *   `audio`
-*   `params`
+*   `parameters`
 
 
 ### 2. IrodoriTTSDesignWebAPI
@@ -82,7 +82,7 @@
 
 #### RETURN_NAMES
 *   `audio`
-*   `params`
+*   `parameters`
 
 ## API呼び出しの要件
 *   `gradio_client.Client(src=api_url)` を利用して通信を行う。

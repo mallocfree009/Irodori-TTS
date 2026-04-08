@@ -25,7 +25,7 @@ class TestComfyUINodes(unittest.TestCase):
 
         # RETURN_TYPES Check
         self.assertEqual(node.RETURN_TYPES, ("AUDIO", "DICT"))
-        self.assertEqual(node.RETURN_NAMES, ("audio", "params"))
+        self.assertEqual(node.RETURN_NAMES, ("audio", "parameters"))
         self.assertEqual(node.FUNCTION, "generate")
 
     @patch("comfy_nodes.nodes.Client")
@@ -86,7 +86,7 @@ class TestComfyUINodes(unittest.TestCase):
 
         # RETURN_TYPES Check
         self.assertEqual(node.RETURN_TYPES, ("AUDIO", "DICT"))
-        self.assertEqual(node.RETURN_NAMES, ("audio", "params"))
+        self.assertEqual(node.RETURN_NAMES, ("audio", "parameters"))
         self.assertEqual(node.FUNCTION, "generate")
 
     @patch("comfy_nodes.nodes.Client")
