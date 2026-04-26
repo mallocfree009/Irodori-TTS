@@ -11,32 +11,32 @@ Gradio Client を使用して外部プログラム（ComfyUIカスタムノー�
 - `api_name="generate"`
 
 ### 入力パラメータ (`predict` に渡すキーワード引数推奨)
-| パラメータ名 | 型 | 説明 |
-| :--- | :--- | :--- |
-| `checkpoint` | `str` | チェックポイントファイルのパスまたはHugging FaceリポジトリID。 |
-| `model_device` | `str` | モデルの実行デバイス (例: `cuda:0`, `cpu`)。 |
-| `model_precision` | `str` | モデルの精度 (例: `float32`, `float16`, `bfloat16`)。 |
-| `codec_device` | `str` | コーデックの実行デバイス。 |
-| `codec_precision` | `str` | コーデックの精度。 |
-| `enable_watermark` | `bool` | 電子透かしの有効/無効化 (現状は内部実装に依存)。 |
-| `text` | `str` | 読み上げる対象のテキスト（必須）。 |
-| `uploaded_audio` | `str` \| `None` | 参照音声ファイルのパス。空またはNoneの場合はノーリファレンスモードになる。 |
-| `num_steps` | `int` | 生成ステップ数 (デフォルト: 40)。 |
-| `num_candidates` | `int` | 生成する音声候補の数 (1 〜 32)。 |
-| `seed_raw` | `str` | シード値 (空文字列の場合はランダム)。 |
-| `cfg_guidance_mode` | `str` | CFGガイダンスモード (`independent`, `joint`, `alternating`)。 |
-| `cfg_scale_text` | `float` | テキストのCFGスケール。 |
-| `cfg_scale_speaker` | `float` | 話者（参照音声）のCFGスケール。 |
-| `cfg_scale_raw` | `str` | CFGスケールの上書き設定 (オプション)。 |
-| `cfg_min_t` | `float` | CFG適用最小時間t。 |
-| `cfg_max_t` | `float` | CFG適用最大時間t。 |
-| `context_kv_cache` | `bool` | コンテキストのKVキャッシュを有効にするか。 |
-| `truncation_factor_raw` | `str` | トランケーション係数 (オプション)。 |
-| `rescale_k_raw` | `str` | 再スケール係数 k (オプション)。 |
-| `rescale_sigma_raw` | `str` | 再スケール係数 sigma (オプション)。 |
-| `speaker_kv_scale_raw` | `str` | 話者KVスケール (オプション)。 |
-| `speaker_kv_min_t_raw` | `str` | 話者KV適用最小時間t (オプション、デフォルト `0.9`)。 |
-| `speaker_kv_max_layers_raw` | `str` | 話者KV適用最大レイヤー数 (オプション)。 |
+| パラメータ名 | 型 | デフォルト値 | 説明 |
+| :--- | :--- | :--- | :--- |
+| `checkpoint` | `str` | `Aratako/Irodori-TTS-500M-v2`<br>またはローカルに見つかった最新ファイル | チェックポイントファイルのパスまたはHugging FaceリポジトリID。 |
+| `model_device` | `str` | 実行環境のデフォルトデバイス<br>(例: `cuda:0`) | モデルの実行デバイス。 |
+| `model_precision` | `str` | そのデバイスのデフォルト精度<br>(例: `bfloat16`) | モデルの精度。 |
+| `codec_device` | `str` | 実行環境のデフォルトデバイス<br>(例: `cuda:0`) | コーデックの実行デバイス。 |
+| `codec_precision` | `str` | そのデバイスのデフォルト精度<br>(例: `bfloat16`) | コーデックの精度。 |
+| `enable_watermark` | `bool` | `False` | 電子透かしの有効/無効化 (現状は内部実装に依存)。 |
+| `text` | `str` | なし (必須) | 読み上げる対象のテキスト。 |
+| `uploaded_audio` | `str` \| `None` | `None` (ノーリファレンス) | 参照音声ファイルのパス。空またはNoneの場合はノーリファレンスモードになる。 |
+| `num_steps` | `int` | `40` | 生成ステップ数 (1 〜 120)。 |
+| `num_candidates` | `int` | `1` | 生成する音声候補の数 (1 〜 32)。 |
+| `seed_raw` | `str` | `""` (ランダム) | シード値 (空文字列の場合はランダム)。 |
+| `cfg_guidance_mode` | `str` | `"independent"` | CFGガイダンスモード (`independent`, `joint`, `alternating`)。 |
+| `cfg_scale_text` | `float` | `3.0` | テキストのCFGスケール (0.0 〜 10.0)。 |
+| `cfg_scale_speaker` | `float` | `5.0` | 話者（参照音声）のCFGスケール (0.0 〜 10.0)。 |
+| `cfg_scale_raw` | `str` | `""` (未使用) | CFGスケールの上書き設定 (オプション)。 |
+| `cfg_min_t` | `float` | `0.5` | CFG適用最小時間t。 |
+| `cfg_max_t` | `float` | `1.0` | CFG適用最大時間t。 |
+| `context_kv_cache` | `bool` | `True` | コンテキストのKVキャッシュを有効にするか。 |
+| `truncation_factor_raw` | `str` | `""` (未使用) | トランケーション係数 (オプション)。 |
+| `rescale_k_raw` | `str` | `""` (未使用) | 再スケール係数 k (オプション)。 |
+| `rescale_sigma_raw` | `str` | `""` (未使用) | 再スケール係数 sigma (オプション)。 |
+| `speaker_kv_scale_raw` | `str` | `""` (未使用) | 話者KVスケール (オプション)。 |
+| `speaker_kv_min_t_raw` | `str` | `"0.9"` | 話者KV適用最小時間t (オプション)。 |
+| `speaker_kv_max_layers_raw` | `str` | `""` (未使用) | 話者KV適用最大レイヤー数 (オプション)。 |
 
 ---
 
@@ -48,31 +48,31 @@ Gradio Client を使用して外部プログラム（ComfyUIカスタムノー�
 - `api_name="generate"`
 
 ### 入力パラメータ (`predict` に渡すキーワード引数推奨)
-| パラメータ名 | 型 | 説明 |
-| :--- | :--- | :--- |
-| `checkpoint` | `str` | チェックポイントファイルのパスまたはHugging FaceリポジトリID。 |
-| `model_device` | `str` | モデルの実行デバイス (例: `cuda:0`, `cpu`)。 |
-| `model_precision` | `str` | モデルの精度 (例: `float32`, `float16`, `bfloat16`)。 |
-| `codec_device` | `str` | コーデックの実行デバイス。 |
-| `codec_precision` | `str` | コーデックの精度。 |
-| `enable_watermark` | `bool` | 電子透かしの有効/無効化。 |
-| `text` | `str` | 読み上げる対象のテキスト（必須）。 |
-| `caption` | `str` | 声質や感情を指定するキャプションテキスト (空の場合はテキストのみの条件付け)。 |
-| `num_steps` | `int` | 生成ステップ数 (デフォルト: 40)。 |
-| `num_candidates` | `int` | 生成する音声候補の数 (1 〜 32)。 |
-| `seed_raw` | `str` | シード値 (空文字列の場合はランダム)。 |
-| `cfg_guidance_mode` | `str` | CFGガイダンスモード (`independent`, `joint`, `alternating`)。 |
-| `cfg_scale_text` | `float` | テキストのCFGスケール。 |
-| `cfg_scale_caption` | `float` | キャプションのCFGスケール。 |
-| `cfg_scale_raw` | `str` | CFGスケールの上書き設定 (オプション)。 |
-| `cfg_min_t` | `float` | CFG適用最小時間t。 |
-| `cfg_max_t` | `float` | CFG適用最大時間t。 |
-| `context_kv_cache` | `bool` | コンテキストのKVキャッシュを有効にするか。 |
-| `max_text_len_raw` | `str` | テキストの最大長 (オプション)。 |
-| `max_caption_len_raw` | `str` | キャプションの最大長 (オプション)。 |
-| `truncation_factor_raw` | `str` | トランケーション係数 (オプション)。 |
-| `rescale_k_raw` | `str` | 再スケール係数 k (オプション)。 |
-| `rescale_sigma_raw` | `str` | 再スケール係数 sigma (オプション)。 |
+| パラメータ名 | 型 | デフォルト値 | 説明 |
+| :--- | :--- | :--- | :--- |
+| `checkpoint` | `str` | `Aratako/Irodori-TTS-500M-v2-VoiceDesign`<br>またはローカルに見つかった最新ファイル | チェックポイントファイルのパスまたはHugging FaceリポジトリID。 |
+| `model_device` | `str` | 実行環境のデフォルトデバイス<br>(例: `cuda:0`) | モデルの実行デバイス。 |
+| `model_precision` | `str` | そのデバイスのデフォルト精度<br>(例: `bfloat16`) | モデルの精度。 |
+| `codec_device` | `str` | 実行環境のデフォルトデバイス<br>(例: `cuda:0`) | コーデックの実行デバイス。 |
+| `codec_precision` | `str` | そのデバイスのデフォルト精度<br>(例: `bfloat16`) | コーデックの精度。 |
+| `enable_watermark` | `bool` | `False` | 電子透かしの有効/無効化。 |
+| `text` | `str` | なし (必須) | 読み上げる対象のテキスト。 |
+| `caption` | `str` | `""` (テキストのみ) | 声質や感情を指定するキャプションテキスト (空の場合はテキストのみの条件付け)。 |
+| `num_steps` | `int` | `40` | 生成ステップ数 (1 〜 120)。 |
+| `num_candidates` | `int` | `1` | 生成する音声候補の数 (1 〜 32)。 |
+| `seed_raw` | `str` | `""` (ランダム) | シード値 (空文字列の場合はランダム)。 |
+| `cfg_guidance_mode` | `str` | `"independent"` | CFGガイダンスモード (`independent`, `joint`, `alternating`)。 |
+| `cfg_scale_text` | `float` | `2.0` | テキストのCFGスケール (0.0 〜 10.0)。 |
+| `cfg_scale_caption` | `float` | `4.0` | キャプションのCFGスケール (0.0 〜 10.0)。 |
+| `cfg_scale_raw` | `str` | `""` (未使用) | CFGスケールの上書き設定 (オプション)。 |
+| `cfg_min_t` | `float` | `0.5` | CFG適用最小時間t。 |
+| `cfg_max_t` | `float` | `1.0` | CFG適用最大時間t。 |
+| `context_kv_cache` | `bool` | `True` | コンテキストのKVキャッシュを有効にするか。 |
+| `max_text_len_raw` | `str` | `""` (未使用) | テキストの最大長 (オプション)。 |
+| `max_caption_len_raw` | `str` | `""` (未使用) | キャプションの最大長 (オプション)。 |
+| `truncation_factor_raw` | `str` | `""` (未使用) | トランケーション係数 (オプション)。 |
+| `rescale_k_raw` | `str` | `""` (未使用) | 再スケール係数 k (オプション)。 |
+| `rescale_sigma_raw` | `str` | `""` (未使用) | 再スケール係数 sigma (オプション)。 |
 
 ---
 
