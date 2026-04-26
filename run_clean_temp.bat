@@ -35,4 +35,3 @@ if exist "%DIR3%" (
 
 echo Cleanup completed!
 endlocal
-pause
