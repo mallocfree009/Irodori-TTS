@@ -16,7 +16,7 @@ from irodori_tts.inference_runtime import (
     get_cached_runtime,
     list_available_runtime_devices,
     list_available_runtime_precisions,
-    save_wav,
+    save_audio,
 )
 
 FIXED_SECONDS = 30.0
@@ -175,6 +175,7 @@ def _run_generation(
     uploaded_audio: str | None,
     num_steps: int,
     num_candidates: int,
+    audio_format: str,
     seed_raw: str,
     cfg_guidance_mode: str,
     cfg_scale_text: float,
@@ -283,8 +284,8 @@ def _run_generation(
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     out_paths: list[str] = []
     for i, audio in enumerate(result.audios, start=1):
-        out_path = save_wav(
-            out_dir / f"sample_{stamp}_{i:03d}.wav",
+        out_path = save_audio(
+            out_dir / f"sample_{stamp}_{i:03d}.{audio_format}",
             audio.float(),
             result.sample_rate,
         )
@@ -383,6 +384,11 @@ def build_ui() -> gr.Blocks:
                     value=1,
                     step=1,
                 )
+                audio_format = gr.Dropdown(
+                    label="Audio Format",
+                    choices=["wav", "ogg", "aac", "mp3"],
+                    value="ogg",
+                )
                 seed_raw = gr.Textbox(label="Seed (blank=random)", value="")
 
             with gr.Row():
@@ -461,6 +467,7 @@ def build_ui() -> gr.Blocks:
                 uploaded_audio,
                 num_steps,
                 num_candidates,
+                audio_format,
                 seed_raw,
                 cfg_guidance_mode,
                 cfg_scale_text,

@@ -23,6 +23,7 @@ Gradio Client を使用して外部プログラム（ComfyUIカスタムノー�
 | `uploaded_audio` | `str` \| `None` | `None` (ノーリファレンス) | 参照音声ファイルのパス。空またはNoneの場合はノーリファレンスモードになる。 |
 | `num_steps` | `int` | `40` | 生成ステップ数 (1 〜 120)。 |
 | `num_candidates` | `int` | `1` | 生成する音声候補の数 (1 〜 32)。 |
+| `audio_format` | `str` | `"ogg"` | 出力音声ファイルのフォーマット (`wav`, `ogg`, `aac`, `mp3`)。 |
 | `seed_raw` | `str` | `""` (ランダム) | シード値 (空文字列の場合はランダム)。 |
 | `cfg_guidance_mode` | `str` | `"independent"` | CFGガイダンスモード (`independent`, `joint`, `alternating`)。 |
 | `cfg_scale_text` | `float` | `3.0` | テキストのCFGスケール (0.0 〜 10.0)。 |
@@ -60,6 +61,7 @@ Gradio Client を使用して外部プログラム（ComfyUIカスタムノー�
 | `caption` | `str` | `""` (テキストのみ) | 声質や感情を指定するキャプションテキスト (空の場合はテキストのみの条件付け)。 |
 | `num_steps` | `int` | `40` | 生成ステップ数 (1 〜 120)。 |
 | `num_candidates` | `int` | `1` | 生成する音声候補の数 (1 〜 32)。 |
+| `audio_format` | `str` | `"ogg"` | 出力音声ファイルのフォーマット (`wav`, `ogg`, `aac`, `mp3`)。 |
 | `seed_raw` | `str` | `""` (ランダム) | シード値 (空文字列の場合はランダム)。 |
 | `cfg_guidance_mode` | `str` | `"independent"` | CFGガイダンスモード (`independent`, `joint`, `alternating`)。 |
 | `cfg_scale_text` | `float` | `2.0` | テキストのCFGスケール (0.0 〜 10.0)。 |

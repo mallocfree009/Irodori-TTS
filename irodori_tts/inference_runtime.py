@@ -945,12 +945,14 @@ def _load_audio(path: str | Path) -> tuple[torch.Tensor, int]:
         return wav, sr
 
 
-def save_wav(path: str | Path, audio: torch.Tensor, sample_rate: int) -> Path:
+def save_audio(path: str | Path, audio: torch.Tensor, sample_rate: int) -> Path:
     out_path = Path(path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     try:
         torchaudio.save(str(out_path), audio, sample_rate)
-    except RuntimeError:
+    except RuntimeError as e:
+        if out_path.suffix.lower() == ".aac":
+            raise RuntimeError(f"torchaudio failed to save AAC, and soundfile does not support AAC fallback: {e}") from e
         import soundfile as sf
 
         sf.write(str(out_path), audio.squeeze(0).numpy(), sample_rate)
