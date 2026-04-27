@@ -190,6 +190,7 @@ def _run_generation(
     speaker_kv_scale_raw: str,
     speaker_kv_min_t_raw: str,
     speaker_kv_max_layers_raw: str,
+    output_file: str = "",
 ) -> tuple[object, ...]:
     def stdout_log(msg: str) -> None:
         print(msg, flush=True)
@@ -279,17 +280,30 @@ def _run_generation(
         log_fn=stdout_log,
     )
 
-    out_dir = Path("gradio_outputs")
-    out_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     out_paths: list[str] = []
-    for i, audio in enumerate(result.audios, start=1):
-        out_path = save_audio(
-            out_dir / f"sample_{stamp}_{i:03d}.{audio_format}",
-            audio.float(),
-            result.sample_rate,
-        )
-        out_paths.append(str(out_path))
+    output_file_str = str(output_file).strip()
+
+    if output_file_str != "":
+        out_base_path = Path(output_file_str)
+        out_base_path.parent.mkdir(parents=True, exist_ok=True)
+        for i, audio in enumerate(result.audios, start=1):
+            if len(result.audios) == 1:
+                final_path = out_base_path
+            else:
+                final_path = out_base_path.with_name(f"{out_base_path.stem}_{i:03d}{out_base_path.suffix}")
+            out_path = save_audio(final_path, audio.float(), result.sample_rate)
+            out_paths.append(str(out_path))
+    else:
+        out_dir = Path("gradio_outputs")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        for i, audio in enumerate(result.audios, start=1):
+            out_path = save_audio(
+                out_dir / f"sample_{stamp}_{i:03d}.{audio_format}",
+                audio.float(),
+                result.sample_rate,
+            )
+            out_paths.append(str(out_path))
 
     runtime_msg = "runtime: reloaded" if reloaded else "runtime: reused"
     detail_lines = [
@@ -414,6 +428,7 @@ def build_ui() -> gr.Blocks:
 
         with gr.Accordion("Advanced (Optional)", open=False):
             cfg_scale_raw = gr.Textbox(label="CFG Scale Override (optional)", value="")
+            output_file = gr.Textbox(label="Output File Path (optional)", value="")
             with gr.Row():
                 cfg_min_t = gr.Number(label="CFG Min t", value=0.5)
                 cfg_max_t = gr.Number(label="CFG Max t", value=1.0)
@@ -482,6 +497,7 @@ def build_ui() -> gr.Blocks:
                 speaker_kv_scale_raw,
                 speaker_kv_min_t_raw,
                 speaker_kv_max_layers_raw,
+                output_file,
             ],
             outputs=[*out_audios, out_log, out_timing],
             api_name="generate",
