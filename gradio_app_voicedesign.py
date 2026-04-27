@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 from datetime import datetime
 from pathlib import Path
 
@@ -203,6 +204,7 @@ def _run_generation(
     truncation_factor_raw: str,
     rescale_k_raw: str,
     rescale_sigma_raw: str,
+    output_file: str = "",
 ) -> tuple[object, ...]:
     def stdout_log(msg: str) -> None:
         print(msg, flush=True)
@@ -307,20 +309,49 @@ def _run_generation(
     out_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     out_paths: list[str] = []
+    output_file_str = str(output_file).strip()
+
     for i, audio in enumerate(result.audios, start=1):
-        out_path = save_audio(
-            out_dir / f"sample_{stamp}_{i:03d}.{audio_format}",
+        temp_path = out_dir / f"sample_{stamp}_{i:03d}.{audio_format}"
+        saved_path = save_audio(
+            temp_path,
             audio.float(),
             result.sample_rate,
         )
-        out_paths.append(str(out_path))
+
+        if output_file_str != "":
+            out_base_path = Path(output_file_str)
+            out_base_path.parent.mkdir(parents=True, exist_ok=True)
+            if len(result.audios) == 1:
+                final_path = out_base_path
+            else:
+                final_path = out_base_path.with_name(f"{out_base_path.stem}_{i:03d}{out_base_path.suffix}")
+            shutil.copy2(saved_path, final_path)
+            # WebAPIのレスポンスとしては、ログに出力パスを記載し、
+            # Gradio Audioコンポーネント用には常に安全なtemp_pathを返す。
+
+        out_paths.append(str(saved_path))
+
+    # Log the desired path if user specified it, else the standard gradio path.
+    saved_paths_log: list[str] = []
+    if output_file_str != "":
+        out_base_path = Path(output_file_str)
+        for i in range(1, len(result.audios) + 1):
+            if len(result.audios) == 1:
+                final_path = out_base_path
+            else:
+                final_path = out_base_path.with_name(f"{out_base_path.stem}_{i:03d}{out_base_path.suffix}")
+            saved_paths_log.append(f"saved[{i}]: {final_path}")
+    else:
+        for i, path in enumerate(out_paths, start=1):
+            saved_paths_log.append(f"saved[{i}]: {path}")
 
     runtime_msg = "runtime: reloaded" if reloaded else "runtime: reused"
     detail_lines = [
         runtime_msg,
         f"seed_used: {result.used_seed}",
         f"candidates: {len(result.audios)}",
-        *[f"saved[{i}]: {path}" for i, path in enumerate(out_paths, start=1)],
+        *saved_paths_log,
         *result.messages,
     ]
     if runtime.model_cfg.use_speaker_condition:
@@ -442,6 +473,7 @@ def build_ui() -> gr.Blocks:
 
         with gr.Accordion("Advanced (Optional)", open=False):
             cfg_scale_raw = gr.Textbox(label="CFG Scale Override (optional)", value="")
+            output_file = gr.Textbox(label="Output File Path (optional)", value="")
             with gr.Row():
                 cfg_min_t = gr.Number(label="CFG Min t", value=0.5)
                 cfg_max_t = gr.Number(label="CFG Max t", value=1.0)
@@ -506,6 +538,7 @@ def build_ui() -> gr.Blocks:
                 truncation_factor_raw,
                 rescale_k_raw,
                 rescale_sigma_raw,
+                output_file,
             ],
             outputs=[*out_audios, out_log, out_timing],
             api_name="generate",
