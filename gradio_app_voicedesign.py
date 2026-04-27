@@ -372,12 +372,7 @@ def _run_generation(
     for i in range(MAX_GRADIO_CANDIDATES):
         if i < len(out_paths):
             if should_clean_temp:
-                out_base_path = Path(output_file_str)
-                if len(result.audios) == 1:
-                    final_path = out_base_path
-                else:
-                    final_path = out_base_path.with_name(f"{out_base_path.stem}_{i+1:03d}{out_base_path.suffix}")
-                audio_updates.append(gr.update(value=str(final_path), visible=True))
+                audio_updates.append(gr.update(value=None, visible=False))
             else:
                 audio_updates.append(gr.update(value=out_paths[i], visible=True))
         else:

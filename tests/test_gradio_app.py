@@ -66,8 +66,8 @@ class TestGradioAppCleanup(unittest.TestCase):
 
             mock_rmtree.assert_called_once()
             # _run_generation returns `*audio_updates, detail_text, timing_text`
-            # When temp files are cleaned, the UI is pointed to the final file location
-            self.assertEqual(result[0]["value"], str(Path(output_file_path)))
+            # When temp files are cleaned, we should point to None to prevent InvalidPathError
+            self.assertEqual(result[0]["value"], None)
 
         # Call with not_save_temp = False
         with patch("gradio_app.shutil.rmtree") as mock_rmtree, \

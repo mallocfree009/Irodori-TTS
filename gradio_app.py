@@ -347,14 +347,7 @@ def _run_generation(
             # we point the UI to the final file location (if available) or None,
             # since the temp files will be removed.
             if should_clean_temp:
-                # We return the target output file path since the temp one is gone.
-                # In multiple candidate case, we determine the correct output name.
-                out_base_path = Path(output_file_str)
-                if len(result.audios) == 1:
-                    final_path = out_base_path
-                else:
-                    final_path = out_base_path.with_name(f"{out_base_path.stem}_{i+1:03d}{out_base_path.suffix}")
-                audio_updates.append(gr.update(value=str(final_path), visible=True))
+                audio_updates.append(gr.update(value=None, visible=False))
             else:
                 audio_updates.append(gr.update(value=out_paths[i], visible=True))
         else:

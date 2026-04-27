@@ -67,7 +67,7 @@ class TestGradioAppVoiceDesignCleanup(unittest.TestCase):
             )
 
             mock_rmtree.assert_called_once()
-            self.assertEqual(result[0]["value"], str(Path(output_file_path)))
+            self.assertEqual(result[0]["value"], None)
 
         # Call with not_save_temp = False
         with patch("gradio_app_voicedesign.shutil.rmtree") as mock_rmtree, \
