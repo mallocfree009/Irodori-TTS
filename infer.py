@@ -13,7 +13,7 @@ from irodori_tts.inference_runtime import (
     SamplingRequest,
     default_runtime_device,
     resolve_cfg_scales,
-    save_wav,
+    save_audio,
 )
 
 FIXED_SECONDS = 30.0
@@ -86,7 +86,7 @@ def main() -> None:
         default=None,
         help="Optional caption/style-control text for caption-enabled voice-design checkpoints.",
     )
-    parser.add_argument("--output-wav", default="output.wav")
+    parser.add_argument("--output-wav", default="output.ogg", help="Output file path. Supported extensions: .wav, .mp3, .ogg, .aac (default: output.ogg)")
     parser.add_argument(
         "--model-device",
         default=default_runtime_device(),
@@ -412,14 +412,14 @@ def main() -> None:
 
     print(f"[seed] used_seed: {result.used_seed}")
     if int(args.num_candidates) == 1:
-        out_path = save_wav(args.output_wav, result.audio, result.sample_rate)
+        out_path = save_audio(args.output_wav, result.audio, result.sample_rate)
         print(f"Saved: {out_path}")
     else:
         base_path = Path(str(args.output_wav))
         suffix = base_path.suffix if base_path.suffix else ".wav"
         for i, audio in enumerate(result.audios, start=1):
             out_path = base_path.with_name(f"{base_path.stem}_{i:03d}{suffix}")
-            saved = save_wav(out_path, audio, result.sample_rate)
+            saved = save_audio(out_path, audio, result.sample_rate)
             print(f"Saved[{i}]: {saved}")
     if args.show_timings:
         _print_timings(result.stage_timings, result.total_to_decode)
