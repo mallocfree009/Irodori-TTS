@@ -205,6 +205,7 @@ def _run_generation(
     rescale_k_raw: str,
     rescale_sigma_raw: str,
     output_file: str = "",
+    not_save_temp: bool = False,
 ) -> tuple[object, ...]:
     def stdout_log(msg: str) -> None:
         print(msg, flush=True)
@@ -305,11 +306,16 @@ def _run_generation(
         log_fn=stdout_log,
     )
 
-    out_dir = Path("gradio_outputs_voicedesign")
-    out_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    out_paths: list[str] = []
     output_file_str = str(output_file).strip()
+    should_clean_temp = not_save_temp and output_file_str != ""
+
+    out_dir = Path("gradio_outputs_voicedesign")
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    if should_clean_temp:
+        out_dir = out_dir / f"temp_{stamp}"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    out_paths: list[str] = []
 
     for i, audio in enumerate(result.audios, start=1):
         temp_path = out_dir / f"sample_{stamp}_{i:03d}.{audio_format}"
@@ -365,9 +371,16 @@ def _run_generation(
     audio_updates: list[object] = []
     for i in range(MAX_GRADIO_CANDIDATES):
         if i < len(out_paths):
-            audio_updates.append(gr.update(value=out_paths[i], visible=True))
+            if should_clean_temp:
+                audio_updates.append(gr.update(value=None, visible=False))
+            else:
+                audio_updates.append(gr.update(value=out_paths[i], visible=True))
         else:
             audio_updates.append(gr.update(value=None, visible=False))
+
+    if should_clean_temp:
+        shutil.rmtree(out_dir, ignore_errors=True)
+
     return (*audio_updates, detail_text, timing_text)
 
 
@@ -485,6 +498,7 @@ def build_ui() -> gr.Blocks:
                 truncation_factor_raw = gr.Textbox(label="Truncation Factor (optional)", value="")
                 rescale_k_raw = gr.Textbox(label="Rescale k (optional)", value="")
                 rescale_sigma_raw = gr.Textbox(label="Rescale sigma (optional)", value="")
+            not_save_temp = gr.Checkbox(label="Not Save Temp Files", value=False)
 
         generate_btn = gr.Button("Generate", variant="primary")
 
@@ -539,6 +553,7 @@ def build_ui() -> gr.Blocks:
                 rescale_k_raw,
                 rescale_sigma_raw,
                 output_file,
+                not_save_temp,
             ],
             outputs=[*out_audios, out_log, out_timing],
             api_name="generate",

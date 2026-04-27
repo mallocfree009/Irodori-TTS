@@ -192,6 +192,7 @@ def _run_generation(
     speaker_kv_min_t_raw: str,
     speaker_kv_max_layers_raw: str,
     output_file: str = "",
+    not_save_temp: bool = False,
 ) -> tuple[object, ...]:
     def stdout_log(msg: str) -> None:
         print(msg, flush=True)
@@ -281,11 +282,16 @@ def _run_generation(
         log_fn=stdout_log,
     )
 
-    out_dir = Path("gradio_outputs")
-    out_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    out_paths: list[str] = []
     output_file_str = str(output_file).strip()
+    should_clean_temp = not_save_temp and output_file_str != ""
+
+    out_dir = Path("gradio_outputs")
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    if should_clean_temp:
+        out_dir = out_dir / f"temp_{stamp}"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    out_paths: list[str] = []
 
     for i, audio in enumerate(result.audios, start=1):
         temp_path = out_dir / f"sample_{stamp}_{i:03d}.{audio_format}"
@@ -337,9 +343,19 @@ def _run_generation(
     audio_updates: list[object] = []
     for i in range(MAX_GRADIO_CANDIDATES):
         if i < len(out_paths):
-            audio_updates.append(gr.update(value=out_paths[i], visible=True))
+            # If temp files were requested to be deleted and output_file was set,
+            # we point the UI to the final file location (if available) or None,
+            # since the temp files will be removed.
+            if should_clean_temp:
+                audio_updates.append(gr.update(value=None, visible=False))
+            else:
+                audio_updates.append(gr.update(value=out_paths[i], visible=True))
         else:
             audio_updates.append(gr.update(value=None, visible=False))
+
+    if should_clean_temp:
+        shutil.rmtree(out_dir, ignore_errors=True)
+
     return (*audio_updates, detail_text, timing_text)
 
 
@@ -460,6 +476,7 @@ def build_ui() -> gr.Blocks:
                 speaker_kv_max_layers_raw = gr.Textbox(
                     label="Speaker KV Max Layers (optional)", value=""
                 )
+            not_save_temp = gr.Checkbox(label="Not Save Temp Files", value=False)
 
         generate_btn = gr.Button("Generate", variant="primary")
 
@@ -515,6 +532,7 @@ def build_ui() -> gr.Blocks:
                 speaker_kv_min_t_raw,
                 speaker_kv_max_layers_raw,
                 output_file,
+                not_save_temp,
             ],
             outputs=[*out_audios, out_log, out_timing],
             api_name="generate",
