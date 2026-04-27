@@ -38,8 +38,8 @@ Gradio Client を使用して外部プログラム（ComfyUIカスタムノー�
 | `speaker_kv_scale_raw` | `str` | `""` (未使用) | 話者KVスケール (オプション)。 |
 | `speaker_kv_min_t_raw` | `str` | `"0.9"` | 話者KV適用最小時間t (オプション)。 |
 | `speaker_kv_max_layers_raw` | `str` | `""` (未使用) | 話者KV適用最大レイヤー数 (オプション)。 |
-| `output_file` | `str` \| `None` | `""` (未使用) | 出力音声ファイルの保存先パス。指定した場合、このパスに出力されます。複数候補生成時は `_{index:03d}` が付与されます。 |
-| `not_save_temp` | `bool` | `False` | 一時ファイルを保存しないかのフラグ。 `True` かつ `output_file` が指定されている場合、出力音声ファイルへの保存完了後に一時ファイルおよびフォルダを削除します。 |
+| `output_file` | `str` \| `None` | `""` (未使用) | 出力音声ファイルの保存先パス。指定した場合、このパスに出力（すでに存在する場合は上書き）されます。複数候補生成時は `_{index:03d}` が付与されます。 |
+| `not_save_temp` | `bool` | `False` | 一時ファイルを保存しないかのフラグ。 `True` かつ `output_file` が指定されている場合、生成時に作成された一時フォルダ（`gradio_outputs/temp_{stamp}`等）と生成したすべての音声候補を、`output_file` へのコピーが完了した直後に自動的に削除します。この時、APIレスポンスの音声ファイルリスト（`result[0:32]`）にはファイルパスの代わりに `None` が返ります。 |
 
 ---
 
@@ -77,8 +77,8 @@ Gradio Client を使用して外部プログラム（ComfyUIカスタムノー�
 | `truncation_factor_raw` | `str` | `""` (未使用) | トランケーション係数 (オプション)。 |
 | `rescale_k_raw` | `str` | `""` (未使用) | 再スケール係数 k (オプション)。 |
 | `rescale_sigma_raw` | `str` | `""` (未使用) | 再スケール係数 sigma (オプション)。 |
-| `output_file` | `str` \| `None` | `""` (未使用) | 出力音声ファイルの保存先パス。指定した場合、このパスに出力されます。複数候補生成時は `_{index:03d}` が付与されます。 |
-| `not_save_temp` | `bool` | `False` | 一時ファイルを保存しないかのフラグ。 `True` かつ `output_file` が指定されている場合、出力音声ファイルへの保存完了後に一時ファイルおよびフォルダを削除します。 |
+| `output_file` | `str` \| `None` | `""` (未使用) | 出力音声ファイルの保存先パス。指定した場合、このパスに出力（すでに存在する場合は上書き）されます。複数候補生成時は `_{index:03d}` が付与されます。 |
+| `not_save_temp` | `bool` | `False` | 一時ファイルを保存しないかのフラグ。 `True` かつ `output_file` が指定されている場合、生成時に作成された一時フォルダ（`gradio_outputs_voicedesign/temp_{stamp}`等）と生成したすべての音声候補を、`output_file` へのコピーが完了した直後に自動的に削除します。この時、APIレスポンスの音声ファイルリスト（`result[0:32]`）にはファイルパスの代わりに `None` が返ります。 |
 
 ---
 
