@@ -6,5 +6,5 @@ if not exist ".venv" (
     exit /b
 )
 call .venv\Scripts\activate
-python gradio_app.py --server-name 0.0.0.0 --server-port 7860
+python gradio_app.py --server-name 127.0.0.1 --server-port 7860
 pause

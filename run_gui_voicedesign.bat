@@ -6,5 +6,5 @@ if not exist ".venv" (
     exit /b
 )
 call .venv\Scripts\activate
-python gradio_app_voicedesign.py --server-name 0.0.0.0 --server-port 7861
+python gradio_app_voicedesign.py --server-name 127.0.0.1 --server-port 7861
 pause
